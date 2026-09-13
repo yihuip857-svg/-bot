@@ -37,12 +37,13 @@ async def on_ready():
     print(f'ログインしました: {client.user}')
 
 # --- コマンド1: ドロップ報告 (/hihi) ---
-@client.tree.command(name="hihi", description="ヒヒイロカネのドロップを報告（証拠画像を添付）")
+@client.tree.command(name="hihi", description="ヒヒイロカネのドロップを報告")
 @app_commands.describe(image="ドロップ画面のスクリーンショット")
 async def hihi(interaction: discord.Interaction, image: discord.Attachment):
+    await interaction.response.defer()
     # 画像チェック
     if not image.content_type or not image.content_type.startswith('image/'):
-        await interaction.response.send_message("画像ファイルを添付してください！", ephemeral=True)
+        await interaction.followup.send("画像ファイルを添付してください！", ephemeral=True)
         return
 
     # DBに記録
@@ -75,7 +76,7 @@ async def count(interaction: discord.Interaction):
     )
     total = cursor.fetchone()[0]
     
-    await interaction.response.send_message(
+    await interaction.followup.send(
         f"📊 **{interaction.user.display_name}** さんのヒヒイロ通算ドロップ数: **{total} 個**",
         ephemeral=True
     )
