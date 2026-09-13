@@ -124,9 +124,9 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
         # Botからユーザー名を取得（サーバー内表示名 ＞ アカウント名 ＞ ID の順で探す）
         user = client.get_user(user_id)
         if user:
-            name = user.display_name
+        name = user.display_name
         else:
-            name = f"ユーザー({user_id})"
+        name = f"ユーザー({user_id})"
 
         text += f"**{i}位**: {name} - {num}個\n"
 
