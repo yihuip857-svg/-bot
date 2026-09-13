@@ -62,7 +62,7 @@ async def hihi(interaction: discord.Interaction, image: discord.Attachment):
     total = cursor.fetchone()[0]
 
     await interaction.followup.send(
-        f"🎉 **{interaction.user.display_name}** さんのヒヒイロドロップを記録しました！\n"
+        f"🎉 **{interaction.user.display_name}** さんのヒヒ掘りを記録しました！\n"
         f"現在のサーバー内通算: **{total} 個**\n"
         f"証拠画像: {image.url}"
     )
@@ -70,6 +70,7 @@ async def hihi(interaction: discord.Interaction, image: discord.Attachment):
 # --- コマンド2: 個人のカウント確認 (/count) ---
 @client.tree.command(name="count", description="自分のドロップ数を確認")
 async def count(interaction: discord.Interaction):
+    await interaction.response.defer()
     cursor.execute(
         "SELECT COUNT(*) FROM drop_logs WHERE user_id = ? AND guild_id = ?",
         (interaction.user.id, interaction.guild_id)
@@ -85,21 +86,22 @@ async def count(interaction: discord.Interaction):
 @client.tree.command(name="ranking", description="サーバー内のヒヒイロドロップランキングを表示")
 @app_commands.choices(period=[
     app_commands.Choice(name="全期間", value="all"),
-    app_commands.Choice(name="今月", value="month"),
-    app_commands.Choice(name="今週", value="week")
+    app_commands.Choice(name="月", value="month"),
+    app_commands.Choice(name="週", value="week")
 ])
 async def ranking(interaction: discord.Interaction, period: app_commands.Choice[str]):
+    await interaction.response.defer()
     now = datetime.datetime.now()
     
     if period.value == "month":
         start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        title = "今月のドロップランキング"
+        title = "ヒヒ堀りランキング＜月＞"
     elif period.value == "week":
         start_date = (now - datetime.timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
-        title = "今週のドロップランキング"
+        title = "ヒヒ堀りランキング＜週＞"
     else:
         start_date = datetime.datetime(2000, 1, 1)
-        title = "全期間のドロップランキング"
+        title = "ヒヒ堀りンキング＜全＞"
 
     # 集計クエリ
     cursor.execute('''
@@ -114,7 +116,7 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
     results = cursor.fetchall()
 
     if not results:
-        await interaction.response.send_message("該当期間のドロップ記録はありません。")
+        await interaction.interaction.followup.send("該当期間のドロップ記録はありません。")
         return
 
     text = f"🏆 **{title}** 🏆\n"
@@ -123,7 +125,7 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
         name = member.display_name if member else f"ユーザーID:{user_id}"
         text += f"**{i}位**: {name} - {num}個\n"
 
-    await interaction.response.send_message(text)
+    await interaction.interaction.followup.send(text)
 
 # 起動
 client.run(os.getenv("DISCORD_TOKEN"))
