@@ -83,7 +83,7 @@ async def count(interaction: discord.Interaction):
     )
 
 # --- コマンド3: サーバー内ランキング (/ranking) ---
-@client.tree.command(name="ranking", description="サーバー内のヒヒイロドロップランキングを表示")
+@client.tree.command(name="ranking", description="サーバー内のヒヒドロップランキングを表示")
 @app_commands.choices(period=[
     app_commands.Choice(name="全期間", value="all"),
     app_commands.Choice(name="月", value="month"),
@@ -120,10 +120,16 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
         return
 
     text = f"🏆 **{title}** 🏆\n"
-    for i, (user_id, num) in enumerate(results, 1):
-        member = interaction.guild.get_member(user_id)
-        name = member.display_name if member else f"ユーザーID:{user_id}"
+        for i, (user_id, num) in enumerate(results, 1):
+        # Botからユーザー名を取得（サーバー内表示名 ＞ アカウント名 ＞ ID の順で探す）
+        user = client.get_user(user_id)
+        if user:
+            name = user.display_name
+        else:
+            name = f"ユーザー({user_id})"
+
         text += f"**{i}位**: {name} - {num}個\n"
+
 
     await interaction.followup.send(text)
 
