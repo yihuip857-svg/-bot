@@ -83,7 +83,7 @@ async def count(interaction: discord.Interaction):
     )
 
 # --- コマンド3: サーバー内ランキング (/ranking) ---
-@client.tree.command(name="ranking", description="サーバー内のヒヒドロップランキングを表示")
+@client.tree.command(name="ranking", description="サーバー内のヒヒイロドロップランキングを表示")
 @app_commands.choices(period=[
     app_commands.Choice(name="全期間", value="all"),
     app_commands.Choice(name="今月", value="month"),
@@ -121,17 +121,31 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
 
     text = f"🏆 **{title}** 🏆\n"
     for i, (user_id, num) in enumerate(results, 1):
-        # メンバー情報から display_name を取得
+        name = None
+        
+        # 1. サーバー内キャッシュから取得
         member = interaction.guild.get_member(user_id)
+        if not member:
+            # 2. サーバーから通信して取得
+            try:
+                member = await interaction.guild.fetch_member(user_id)
+            except Exception:
+                member = None
+
         if member:
             name = member.display_name
         else:
-            name = f"ユーザー({user_id})"
+            # 3. サーバー脱退などの場合、Discord全体からユーザー名を取得
+            try:
+                user = await client.fetch_user(user_id)
+                name = user.display_name
+            except Exception:
+                name = f"ユーザー({user_id})"
 
-        # 取得した display_name を使ってテキストを作成
         text += f"**{i}位**: {name} - {num}個\n"
 
     await interaction.followup.send(text)
+
 
     # 集計クエリ
     cursor.execute('''
@@ -141,27 +155,7 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
         GROUP BY user_id 
         ORDER BY count DESC 
         LIMIT 10
-    ''', (interaction.guild_id, start_date))
-    
-    results = cursor.fetchall()
-
-    if not results:
-        await interaction.followup.send("該当期間のドロップ記録はありません。")
-        return
-
-    text = f"🏆 **{title}** 🏆\n"
-    for i, (user, num) in enumerate(results, 1):
-        # Botからユーザー名を取得（サーバー内表示名 ＞ アカウント名 ＞ ID の順で探す）
-        user = client.get_user(user_id)
-    if user:
-        name = user.display_name
-    else:
-        name = f"ユーザー({user_id})"
-
-        text += f"**{i}位**: {name} - {num}個\n"
-
-
-    await interaction.followup.send(text)
+    ''', (interaction.guild_id, start_date)
 
 # 起動
 client.run(os.getenv("DISCORD_TOKEN"))
