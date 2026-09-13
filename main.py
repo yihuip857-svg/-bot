@@ -83,7 +83,7 @@ async def count(interaction: discord.Interaction):
     )
 
 # --- コマンド3: サーバー内ランキング (/ranking) ---
-@client.tree.command(name="ranking", description="サーバー内のヒヒイロドロップランキングを表示")
+@client.tree.command(name="ranking", description="サーバー内のヒヒ掘りランキングを表示")
 @app_commands.choices(period=[
     app_commands.Choice(name="全期間", value="all"),
     app_commands.Choice(name="今月", value="month"),
