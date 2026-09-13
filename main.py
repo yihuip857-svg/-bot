@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import datetime
 import discord
@@ -124,4 +125,5 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
     await interaction.response.send_message(text)
 
 # 起動
-client.run("MTU0ODc0OTM4NTAxMjIxNTk0OA.Gj5fRJ.2U18jpJr_yc09-0rwAxx6ZRSWwN-y5HQcHNTdQ")
+client.run(os.getenv("DISCORD_TOKEN"))
+
