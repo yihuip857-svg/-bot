@@ -78,7 +78,7 @@ async def count(interaction: discord.Interaction):
     total = cursor.fetchone()[0]
     
     await interaction.followup.send(
-        f"📊 **{interaction.user.display_name}** さんのヒヒイロ通算ドロップ数: **{total} 個**",
+        f"📊 **{interaction.user.display_name}** さんの通算ドロップ数: **{total} 個**",
         ephemeral=True
     )
 
