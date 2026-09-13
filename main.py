@@ -116,7 +116,7 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
     results = cursor.fetchall()
 
     if not results:
-        await interaction.interaction.followup.send("該当期間のドロップ記録はありません。")
+        await interaction..followup.send("該当期間のドロップ記録はありません。")
         return
 
     text = f"🏆 **{title}** 🏆\n"
@@ -125,7 +125,7 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
         name = member.display_name if member else f"ユーザーID:{user_id}"
         text += f"**{i}位**: {name} - {num}個\n"
 
-    await interaction.interaction.followup.send(text)
+    await interaction..followup.send(text)
 
 # 起動
 client.run(os.getenv("DISCORD_TOKEN"))
