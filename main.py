@@ -83,25 +83,54 @@ async def count(interaction: discord.Interaction):
     )
 
 # --- コマンド3: サーバー内ランキング (/ranking) ---
-@client.tree.command(name="ranking", description="サーバー内のヒヒドロップランキングを表示")
+@client.tree.command(name="ranking", description="サーバー内のヒヒイロドロップランキングを表示")
 @app_commands.choices(period=[
     app_commands.Choice(name="全期間", value="all"),
-    app_commands.Choice(name="月", value="month"),
-    app_commands.Choice(name="週", value="week")
+    app_commands.Choice(name="今月", value="month"),
+    app_commands.Choice(name="今週", value="week"),
 ])
 async def ranking(interaction: discord.Interaction, period: app_commands.Choice[str]):
     await interaction.response.defer()
+
     now = datetime.datetime.now()
-    
+
     if period.value == "month":
         start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        title = "ヒヒ堀りランキング＜月＞"
+        title = "今月のヒヒ掘りランキング"
     elif period.value == "week":
         start_date = (now - datetime.timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
-        title = "ヒヒ堀りランキング＜週＞"
+        title = "今週のヒヒ掘りランキング"
     else:
         start_date = datetime.datetime(2000, 1, 1)
-        title = "ヒヒ堀りンキング＜全＞"
+        title = "全期間のヒヒ掘りランキング"
+
+    cursor.execute('''
+        SELECT user_id, COUNT(*) as count
+        FROM drop_logs
+        WHERE guild_id = ? AND created_at >= ?
+        GROUP BY user_id
+        ORDER BY count DESC
+        LIMIT 10
+    ''', (interaction.guild_id, start_date))
+
+    results = cursor.fetchall()
+
+    if not results:
+        await interaction.followup.send("該当期間のドロップ記録はありません。")
+        return
+
+    text = f"🏆 **{title}** 🏆\n"
+    for i, (user_id, num) in enumerate(results, 1):
+        try:
+            # サーバーから直接メンバー情報を取得（キャッシュになくても取得可能）
+            member = interaction.guild.get_member(user_id) or await interaction.guild.fetch_member(user_id)
+            name = member.display_name
+        except Exception:
+            name = f"ユーザー({user_id})"
+
+        text += f"**{i}位**: {name} - {num}個\n"
+
+    await interaction.followup.send(text)
 
     # 集計クエリ
     cursor.execute('''
