@@ -146,17 +146,6 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
 
     await interaction.followup.send(text)
 
-
-    # 集計クエリ
-    cursor.execute('''
-        SELECT user_id, COUNT(*) as count 
-        FROM drop_logs 
-        WHERE guild_id = ? AND created_at >= ?
-        GROUP BY user_id 
-        ORDER BY count DESC 
-        LIMIT 10
-    ''', (interaction.guild_id, start_date)
-
 # 起動
 client.run(os.getenv("DISCORD_TOKEN"))
 
