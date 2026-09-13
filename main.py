@@ -61,7 +61,7 @@ async def hihi(interaction: discord.Interaction, image: discord.Attachment):
     )
     total = cursor.fetchone()[0]
 
-    await interaction.response.send_message(
+    await interaction.followup.send(
         f"🎉 **{interaction.user.display_name}** さんのヒヒイロドロップを記録しました！\n"
         f"現在のサーバー内通算: **{total} 個**\n"
         f"証拠画像: {image.url}"
