@@ -124,4 +124,4 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
     await interaction.response.send_message(text)
 
 # 起動
-client.run(MTU0ODc0OTM4NTAxMjIxNTk0OA.GVX73D.Hd8GHFbm8cf4yiP3_TGROFZp9n16yYv6Oju6nA)
+client.run("MTU0ODc0OTM4NTAxMjIxNTk0OA.Gj5fRJ.2U18jpJr_yc09-0rwAxx6ZRSWwN-y5HQcHNTdQ")
