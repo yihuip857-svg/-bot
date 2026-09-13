@@ -120,12 +120,12 @@ async def ranking(interaction: discord.Interaction, period: app_commands.Choice[
         return
 
     text = f"🏆 **{title}** 🏆\n"
-        for i, (user_id, num) in enumerate(results, 1):
+    for i, (user_id, num) in enumerate(results, 1):
         # Botからユーザー名を取得（サーバー内表示名 ＞ アカウント名 ＞ ID の順で探す）
         user = client.get_user(user_id)
-        if user:
+    if user:
         name = user.display_name
-        else:
+    else:
         name = f"ユーザー({user_id})"
 
         text += f"**{i}位**: {name} - {num}個\n"
